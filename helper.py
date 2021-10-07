@@ -296,7 +296,8 @@ def redist81(trip,pix):
 
 def redist_by_trace(O,E,i,j,q,pixels_list):
   # if q > 0, then that set is a donor.  First, find largest doner
-  F = {}
+  F,M = {},{}
+  D,A = [],[]
   F[1],F[2],F[3],F[4],F[5],F[6],F[7],F[8] = {},{},{},{},{},{},{},{}
   F[1][2] = redist12
   F[1][3] = redist13
@@ -354,7 +355,7 @@ def redist_by_trace(O,E,i,j,q,pixels_list):
   F[8][5] = redist41
   F[8][6] = redist31
   F[8][7] = redist21
-  M = {}
+
   M[1] = E[2*i][2*j]
   M[2] = O[2*i-1][2*j]
   M[3] = E[2*i+1][2*j-1]
@@ -363,7 +364,6 @@ def redist_by_trace(O,E,i,j,q,pixels_list):
   M[6] = O[2*i-1][2*j+1]
   M[7] = E[2*i+1][2*j]
   M[8] = O[2*i][2*j]
-  D,A = [],[]
   for k in range(len(q)):
     if q[k]>0:
       if q[k] > 1:
@@ -396,8 +396,7 @@ def redist_by_trace(O,E,i,j,q,pixels_list):
 def getPixels(cc,pixels_list):
  E6,O6 = {},{}
  E3,O3 = {},{}
- emb_pix6 = []
- emb_pix3 = []
+ emb_pix6,emb_pix3 = [],[]
 
  for i in range(cc):
   E6[i],O6[i] = {},{}

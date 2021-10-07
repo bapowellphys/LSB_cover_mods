@@ -18,7 +18,7 @@ from helper import *
 
 bpc = 7  # bits per character
 
-trace_set_range = [-5,5]
+trace_set_range = [-5,5]  # range of trace indices to include in modifications; the wider the range, the better the protection but the lower the capacity
 embed_random = True  # if interested in embedding a pseudo-random string into modified cover to simulate an encrypted message (useful for research and testing)
 embed_message = False  # if interested in embedding a pseudo-random string into modified cover to simulate an encrypted message (useful for research and testing)
 
@@ -74,13 +74,10 @@ for k in O3.keys():
       if j not in O3[k][i].keys():
         O3[k][i][j] = []
 
-emb6 = []
-emb3 = []
-omitted_sets3 = []
-omitted_sets6 = []
-
+emb6,emb3 = [],[]
+omitted_sets6,omitted_sets3 = [],[]
 od = {}
-count = 0
+
 for i in range(trace_set_range[0],trace_set_range[1]+1):
   for j in range(trace_set_range[0],trace_set_range[1]+1):
     for k in E6.keys():
@@ -111,23 +108,23 @@ for i in range(trace_set_range[0],trace_set_range[1]+1):
 emb3 = sorted(emb3,key = lambda e: e[3])
 
 
-omitsize3 = 0
-omitsize6 = 0
-included_sets3 = []
-included_sets6 = []
-new_rate3 = []
-new_rate6 = []
+omitsize3 = omitsize3 = 0
+included_sets6,included_sets3 = [],[]
+omitted_pixels = []
+new_rate6,new_rate3 = [],[]
+
 for i in emb3:
   new_rate3.append(i[3]*(len(emb_pix3) - omitsize3*3)/float(len(emb_pix3)))
   omitsize3 += i[4]
-
 rate3 = emb3[np.argmax(new_rate3)][3]
+
 for i in emb6:
   new_rate6.append(i[3]*(len(emb_pix6) - omitsize6*3)/float(len(emb_pix6)))
   omitsize6 += i[4]
 rate6 = emb6[np.argmax(new_rate6)][3]
 
 rate = min(rate3,rate6)
+
 for i in range(np.argmax(new_rate6)):
   omitted_sets6.append((emb6[i][0],emb6[i][1],emb6[i][2]))
 for i in range(np.argmax(new_rate6),len(new_rate6)):
@@ -137,9 +134,6 @@ for i in range(np.argmax(new_rate3)):
 for i in range(np.argmax(new_rate3),len(new_rate3)):
   included_sets3.append((emb3[i][0],emb3[i][1],emb3[i][2]))
 
-embeddable_pixels = []
-omitted_pixels = []
-
 for i in omitted_sets3:
   for j in getElementsFromTrace(O3[i[0]],E3[i[0]],i[1],i[2]):
     omitted_pixels.append(j)
@@ -147,8 +141,6 @@ for i in omitted_sets6:
   for j in getElementsFromTrace(O6[i[0]],E6[i[0]],i[1],i[2]):
     omitted_pixels.append(j)
 omitted_pixels.sort()
-
-
 
 emb_pix = set(emb_pix3).union(set(emb_pix6))
 embeddable_pixels = list(set(emb_pix).difference(set(omitted_pixels)))
@@ -195,9 +187,6 @@ mod_cover.save("mod_"+name)
 mod_cover.close()
 im.close()
 
-
-
-#exit(1)
 if embed_random or embed_message:
 
  stego_image = Image.new(im.mode, im.size)
